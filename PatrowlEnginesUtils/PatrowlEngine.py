@@ -204,8 +204,10 @@ class PatrowlEngine:
         elif 'details' in  self.scans[scan_id].keys() and 'reason' in  self.scans[scan_id]['details']:
             response.update({'reason': self.scans[scan_id]['details']['reason'])
 
-        response.update({'status': self.scans[scan_id]['status'],
-                         'finished_at': self.scans[scan_id]['finished_at']})
+        if 'finished_at' in self.scans[scan_id].keys():
+            response.update({'finished_at': self.scans[scan_id]['finished_at']})
+                             
+        response.update({'status': self.scans[scan_id]['status']})
 
         return jsonify(response)
 
