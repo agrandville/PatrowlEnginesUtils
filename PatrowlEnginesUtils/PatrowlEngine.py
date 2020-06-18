@@ -176,6 +176,8 @@ class PatrowlEngine:
 
     def getstatus_scan(self, scan_id):
         """Get the status of a scan identified by his 'id'."""
+
+        response = {}
         if scan_id not in self.scans.keys():
             raise PatrowlEngineExceptions(1002,"scan_id '{}' not found".format(scan_id))
 
@@ -196,7 +198,16 @@ class PatrowlEngine:
                 # update finished time if not already set
                 self.scans[scan_id]['finished_at'] = int(time.time() * 1000)
 
-        return jsonify({"status": self.scans[scan_id]['status']})
+        # if a reason is specified, replicate it in response
+        if 'reason' in  self.scans[scan_id].keys():
+            response.update({'reason': self.scans[scan_id]['reason']})
+        elif 'details' in  self.scans[scan_id].keys() and 'reason' in  self.scans[scan_id]['details']:
+            response.update({'reason': self.scans[scan_id]['details']['reason'])
+
+        response.update({'status': self.scans[scan_id]['status'],
+                         'finished_at': self.scans[scan_id]['finished_at']})
+
+        return jsonify(response)
 
 
     def getstatus(self):
